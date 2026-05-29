@@ -30,13 +30,14 @@ for etf in all_etfs:
     if not any(word in name for word in exclude_keywords):
         filtered_etfs.append({'code': code, 'name': name})
 
+# 💡 [튜닝 포인트] 최신 상장순 정렬 후, 타겟 개수를 '15개'로 대폭 확장!
 filtered_etfs.sort(key=lambda x: x['code'], reverse=True)
-target_etfs = filtered_etfs[:6] 
+target_etfs = filtered_etfs[:15] 
 
 # =========================================================================
-# 2단계: 이번 주 신규 ETF 내부 진짜 구성종목(PDF) 실시간 추출
+# 2단계: 신규 ETF 15개 내부 구성종목(PDF) 실시간 추출
 # =========================================================================
-print("\n⚡ 2단계: 이번 주 신규 ETF 내부 진짜 구성종목(PDF) 실시간 추출 중...")
+print("\n⚡ 2단계: 신규 ETF 내부 진짜 구성종목(PDF) 실시간 추출 중...")
 all_real_components = []
 
 for target in target_etfs:
@@ -55,9 +56,9 @@ for target in target_etfs:
         continue
 
 # =========================================================================
-# 3단계: 이번 주 데이터 최종 TOP 5 교집합 연산 및 텔레그램 발송
+# 3단계: 최종 TOP 5 교집합 연산 및 텔레그램 발송
 # =========================================================================
-print("\n📊 3단계: 이번 주 누적 패시브 수급 겹치기 연산 및 알림 기동...")
+print("\n📊 3단계: 누적 패시브 수급 겹치기 연산 및 알림 기동...")
 
 if not all_real_components:
     message = "⚠️ [수급 폭격기 알림]\n현재 장외 시간이거나 주말이라 데이터 통로가 닫혀있습니다. 평일 장중에 가동되면 대장주 실시간 데이터가 쏟아집니다!"
@@ -70,12 +71,12 @@ else:
         '겹치는수': result_counts.values
     }).head(5)
 
-    message = "🚨 이번 주 신규 ETF 공통 분모 [최종 TOP 5] 🚨\n"
+    message = f"🚨 신규 ETF 15개 공통 분모 [최종 TOP 5] 🚨\n"
     message += "==================================\n"
     for idx, row in final_top5.iterrows():
         message += f"🔥 {row['종목명']} ({row['겹치는수']}개 ETF 중복 편입)\n"
     message += "==================================\n"
-    message += "💡 이번 주에 자산운용사들이 동시에 대량 편입한 수급 대장주입니다."
+    message += "💡 자산운용사들이 최근 동시다발적으로 대량 편입한 수급 대장주입니다."
 
 telegram_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 response = requests.post(telegram_url, json={"chat_id": CHAT_ID, "text": message})
