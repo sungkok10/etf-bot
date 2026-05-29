@@ -1,0 +1,26 @@
+name: ETF 수급 폭격기 주간 무인 자동화
+
+on:
+  schedule:
+    # 한국 시간 기준 '매주 금요일 오후 1시 30분'에 미국 서버가 자동으로 깨어나 코드를 실행합니다.
+    - cron: '30 4 * * 5'
+  workflow_dispatch: # 내가 원할 때 언제든 수동으로 버튼을 눌러 실행하는 옵션
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 무인 서버에 성국님 코드 내려받기
+      uses: actions/checkout@v3
+
+    - name: 파이썬 컴퓨터 환경 세팅하기
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 필요한 도구(라이브러리) 자동 설치
+      run: |
+        pip install requests pandas
+
+    - name: 성국님의 주식 AI 비서 기동!
+      run: python bot.py
